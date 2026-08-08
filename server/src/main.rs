@@ -1,5 +1,6 @@
 use evdev::{Device, EventSummary, KeyCode, RelativeAxisCode};
 use protocol::{read_event, send_event, InputEvent};
+use std::env;
 use std::path::Path;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::Arc;
@@ -12,9 +13,14 @@ fn is_mouse_button(code: u16) -> bool {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Optional CLI argument for screen max_width (defaults to 1920.0)
+    let args: Vec<String> = env::args().collect();
+    let max_width: f64 = args.get(1).and_then(|s| s.parse().ok()).unwrap_or(1920.0);
+
     let listener = TcpListener::bind("0.0.0.0:9999").await?;
     println!("KVM Server listening on port 9999...");
     println!("Layout: Server [Left] <---> Client [Right]");
+    println!("Server screen max width set to: {}px", max_width);
 
     loop {
         let (socket, addr) = listener.accept().await?;
@@ -25,8 +31,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let client_active = Arc::new(AtomicBool::new(false));
         let client_active_reader = client_active.clone();
 
-        // Explicitly typed f64 variables
-        let max_width: f64 = 1920.0;
         let virtual_x = Arc::new(AtomicU64::new((max_width / 2.0).to_bits()));
         let virtual_x_reader = virtual_x.clone();
 

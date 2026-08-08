@@ -3,6 +3,7 @@ use ashpd::desktop::remote_desktop::{DeviceType, KeyState, RemoteDesktop};
 use ashpd::desktop::PersistMode;
 use ashpd::WindowIdentifier;
 use protocol::{read_event, write_event, InputEvent};
+use std::env;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
@@ -10,7 +11,11 @@ use tokio::net::TcpStream;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("Initializing GNOME Wayland portal session...");
+    let args: Vec<String> = env::args().collect();
+    let server_ip = args.get(1).map(|s| s.as_str()).unwrap_or("192.168.50.1");
+    let addr = format!("{}:9999", server_ip);
+
+    println!("Initializing...");
 
     let remote_desktop = Arc::new(RemoteDesktop::new().await?);
     let session = Arc::new(remote_desktop.create_session().await?);
