@@ -115,7 +115,7 @@ Create a systemd user service directory:
 
 ```bash
 mkdir -p ~/.config/systemd/user/
-nano ~/.config/systemd/user/rusty-client.service
+nano ~/.config/systemd/user/rusty-client.service <screen_width>
 ```
 
 Paste the following configuration:
@@ -128,7 +128,7 @@ PartOf=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart=/home/YOUR_CLIENT_USER/client
+ExecStart=/home/YOUR_CLIENT_USER/client <ip_addr>
 Restart=always
 RestartSec=3
 
