@@ -26,14 +26,7 @@ Traditional software KVM solutions like **Input Leap** (and its predecessors, Ba
 - 🔄 **Persistent Auto-Reconnect:** Automatically recovers if the network drops or the server restarts.
 - ⚙️ **Systemd Native:** Designed to start automatically on boot as system and user daemons.
 
----
 
-## Prerequisites
-- **Rust Toolchain** (latest stable via [rustup.rs](https://rustup.rs/))
-- **Server Machine:** Linux with user permissions for the `input` group.
-- **Client Machine:** A modern Linux environment running a Wayland compositor (e.g., GNOME, Hyprland, Sway) supporting **XDG Desktop Portals**.
-
----
 
 ## Installation & Compilation
 
