@@ -27,7 +27,90 @@ Traditional software KVM solutions like **Input Leap** (and its predecessors, Ba
 - ⚙️ **Systemd Native:** Designed to start automatically on boot as system and user daemons.
 
 
+Build the release binaries:
 
+Bash
+cargo build --release
+Binaries will be compiled to target/release/server and target/release/client.
+
+Setting Up Systemd Services
+1. Server Setup (On the Host Machine)
+Add your user to the input group so it can read raw device events:
+
+Bash
+sudo usermod -aG input $USER
+Create the systemd service file:
+
+Bash
+sudo nano /etc/systemd/system/rusty-server.service
+Paste the following configuration (adjusting your username and paths):
+
+Ini, TOML
+[Unit]
+Description=Rusty KVM Server Daemon
+After=network.target
+
+[Service]
+Type=simple
+User=YOUR_USERNAME
+WorkingDirectory=/path/to/rusty-kvm
+ExecStart=/path/to/rusty-kvm/target/release/server
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+Enable and start the server:
+
+Bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now rusty-server
+2. Client Setup (On the Remote Machine)
+Copy your compiled client binary to the remote machine (e.g., placing it at ~/client).
+
+Create a systemd user service directory:
+
+Bash
+mkdir -p ~/.config/systemd/user/
+nano ~/.config/systemd/user/rusty-client.service
+Paste the following configuration:
+
+Ini, TOML
+[Unit]
+Description=Rusty KVM Client Wayland Portal Service
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/home/YOUR_CLIENT_USER/client
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target
+Enable user lingering so the service can run before logging into a graphical session:
+
+Bash
+sudo loginctl enable-linger YOUR_CLIENT_USER
+Enable and start the client user service:
+
+Bash
+systemctl --user daemon-reload
+systemctl --user enable --now rusty-client
+How to Watch the Logs
+Because both components run silently as background systemd services, you can stream live diagnostic logs directly from your terminal:
+
+Watch Server Logs (Host Machine):
+
+Bash
+sudo journalctl -u rusty-server -f
+Watch Client Logs (Remote Machine):
+
+Bash
+journalctl --user -u rusty-client -f
+License
+Distributed under the MIT License. See LICENSE for more information.
 ## Installation & Compilation
 
 1. **Clone the repository:**
