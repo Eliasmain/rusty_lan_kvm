@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 
-// Define a type alias to keep code clean
 pub type Res<T> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
