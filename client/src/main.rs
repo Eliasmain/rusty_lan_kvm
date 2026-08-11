@@ -1,4 +1,4 @@
-use arboard::Clipboard;
+use arboard::{Clipboard, SetExtLinux};
 use ashpd::desktop::remote_desktop::{DeviceType, KeyState, RemoteDesktop};
 use ashpd::desktop::PersistMode;
 use ashpd::WindowIdentifier;
@@ -26,6 +26,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             &session,
             DeviceType::Keyboard | DeviceType::Pointer,
             None,
+            // accept evrytime without prompting the user
             PersistMode::DoNot,
         )
         .await?;
@@ -205,11 +206,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
                 InputEvent::Clipboard { text } => {
                     println!("Applying clipboard from Server...");
-                    if let Ok(mut clipboard) = Clipboard::new() {
-                        let _ = clipboard.set_text(text);
+                    // Change 'cb' to 'mut cb' here:
+                    if let Ok(mut cb) = Clipboard::new() {
+                        std::thread::spawn(move || {
+                            let _ = cb.set().wait().text(text);
+                        });
                         println!("✓ Client clipboard updated from server");
                     } else {
-                        eprintln!("✗ Failed to access client clipboard");
+                        println!("✗ Failed to access client clipboard");
                     }
                 }
             }
