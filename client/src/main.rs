@@ -219,7 +219,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
 
-        // Clear the writer handle on disconnect
         {
             let mut guard = current_writer.lock().await;
             *guard = None;
