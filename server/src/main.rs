@@ -253,7 +253,6 @@ async fn main() -> Res<()> {
             });
         }
 
-        // 4. Main Outbound Loop
         while let Some(event) = outbound_rx.recv().await {
             if send_event(&mut writer, &event).await.is_err() {
                 break;
